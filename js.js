@@ -32,6 +32,15 @@ function operate(num1, operate, num2) {
     }
 }
 
+function convertToNumber(number) {
+    return parseFloat(number);
+}
+
+function displayValue(str) {
+    display.value +=str;
+}
+
+
 let firstOperand = '', secondOperand = '', operator = '';
 
 const numberButtonsContainer = document.querySelector('.numbersContainer');
@@ -41,11 +50,22 @@ const operatorButtonsContainer = document.querySelector('.operatorsContainer');
 
 let numOneOccupied = false;
 let secondOperandTurn = true;
+let firstOperandTurn = true;
+
+function displayInitialValue(){
+    display.value = 0;
+}
+
+displayInitialValue()
 
 numberButtonsContainer.addEventListener('click', (e) => {
     let buttons = e.target.id;
 
     if(!numOneOccupied) {
+         if(firstOperandTurn) {
+            display.value = '';
+            firstOperandTurn = false;
+        }
         firstOperand+=buttons;
         displayValue(buttons);
     }
@@ -60,24 +80,40 @@ numberButtonsContainer.addEventListener('click', (e) => {
     }
 });
 
+let operatorSelected = false;
+let resultFromPreviousExpression = 0;
+let result = '';
+
 operatorButtonsContainer.addEventListener('click' , (e) => {
     let buttons = e.target.id;
     console.log(buttons);
-    if(!operator) {
+    console.log(firstOperand); 
+    console.log(secondOperand);
+
+
+    if (operator && operatorSelected) {
         operator = buttons;
         numOneOccupied  = true;
     }
+
+    if(!operator) {
+        operator = buttons;
+        numOneOccupied  = true;
+        operatorSelected = true;
+    }
+    else if (operator && firstOperand && secondOperand)
+    {
+        display.value = '';
+        result = String(+operate(convertToNumber(firstOperand),operator, convertToNumber(secondOperand)).toFixed(2));
+        displayValue(result);
+        operator = buttons;
+        firstOperand = result;
+        secondOperand = '';  
+        secondOperandTurn = true;
+
+    }
+  
 })
-
-function convertToNumber(number) {
-    return parseFloat(number);
-}
-
-function displayValue(str) {
-    display.value +=str;
-}
-
-
 
 calculate.addEventListener('click', () => {
     console.log(firstOperand);
@@ -87,11 +123,13 @@ calculate.addEventListener('click', () => {
     if(firstOperand && secondOperand && operator)
     {
         display.value = "";
-        let result = operate(convertToNumber(firstOperand),operator, convertToNumber(secondOperand));
-     
+        result = String(+operate(convertToNumber(firstOperand),operator, convertToNumber(secondOperand)).toFixed(2));
         displayValue(result);
     }
-    
+    else 
+    {
+        displayInitialValue()
+    }
 }) 
 
 
