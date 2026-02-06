@@ -51,6 +51,7 @@ const operatorButtonsContainer = document.querySelector('.operatorsContainer');
 let numOneOccupied = false;
 let secondOperandTurn = true;
 let firstOperandTurn = true;
+let displayNaN = false;
 
 function displayInitialValue(){
     display.value = 0;
@@ -60,6 +61,11 @@ displayInitialValue()
 
 numberButtonsContainer.addEventListener('click', (e) => {
     let buttons = e.target.id;
+
+    if(displayNaN) {
+        display.value = 'NaN';
+        return;
+    }
 
     if(!numOneOccupied) {
          if(firstOperandTurn) {
@@ -75,14 +81,15 @@ numberButtonsContainer.addEventListener('click', (e) => {
             display.value = '';
             secondOperandTurn = false;
         }
+        isOperatorSelected  = false;
         secondOperand+=buttons;
         displayValue(buttons);
     }
 });
 
-let operatorSelected = false;
-let resultFromPreviousExpression = 0;
+let isOperatorSelected = false;
 let result = '';
+
 
 operatorButtonsContainer.addEventListener('click' , (e) => {
     let buttons = e.target.id;
@@ -90,18 +97,20 @@ operatorButtonsContainer.addEventListener('click' , (e) => {
     console.log(firstOperand); 
     console.log(secondOperand);
 
-
-    if (operator && operatorSelected) {
-        operator = buttons;
-        numOneOccupied  = true;
-    }
-
     if(!operator) {
         operator = buttons;
         numOneOccupied  = true;
-        operatorSelected = true;
+        isOperatorSelected = true;
     }
-    else if (operator && firstOperand && secondOperand)
+    else if (isOperatorSelected) {
+        operator = buttons;
+    } else  if(operator === '/' && secondOperand === '0'){
+        console.log('taa');
+        display.value = 'NaN';
+        displayNaN = true;
+        return;
+    }
+    else if(operator && firstOperand && secondOperand)
     {
         display.value = '';
         result = String(+operate(convertToNumber(firstOperand),operator, convertToNumber(secondOperand)).toFixed(2));
@@ -110,7 +119,6 @@ operatorButtonsContainer.addEventListener('click' , (e) => {
         firstOperand = result;
         secondOperand = '';  
         secondOperandTurn = true;
-
     }
   
 })
@@ -132,8 +140,17 @@ calculate.addEventListener('click', () => {
     }
 }) 
 
+const clearBtn = document.querySelector('#clearBtn');
 
+clearBtn.addEventListener('click', () => {
 
-
-
-
+    firstOperand = '';
+    secondOperand = '';
+    operator= '';
+    firstOperandTurn = true;
+    displayNaN = false;
+    secondOperandTurn = true;
+    numOneOccupied  = false;
+    operatorSelected = false;
+    displayInitialValue();
+})
