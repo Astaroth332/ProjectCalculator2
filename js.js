@@ -68,10 +68,17 @@ numberButtonsContainer.addEventListener('click', (e) => {
     }
 
     if(!numOneOccupied) {
-         if(firstOperandTurn) {
+        if(display.value === '0' && display.value.length >= 1) {
             display.value = '';
             firstOperandTurn = false;
         }
+
+        if(buttons === '.' && firstOperand.includes('.')) {
+            const dotButtons = document.querySelector('#.');
+            dotButtons.disable = true;
+            return;
+        }
+
         firstOperand+=buttons;
         displayValue(buttons);
     }
@@ -80,6 +87,12 @@ numberButtonsContainer.addEventListener('click', (e) => {
         if(secondOperandTurn) {
             display.value = '';
             secondOperandTurn = false;
+        }
+
+        if(buttons === '.' && secondOperand.includes('.')) {
+            const dotButtons = document.querySelector('#.');
+            dotButtons.disable = true;
+            return;
         }
         isOperatorSelected  = false;
         secondOperand+=buttons;
@@ -153,4 +166,24 @@ clearBtn.addEventListener('click', () => {
     numOneOccupied  = false;
     operatorSelected = false;
     displayInitialValue();
+})
+
+const delBtn = document.querySelector('#delBtn');
+
+delBtn.addEventListener('click', () => {
+
+    if(display.value.length > 1)
+    {
+        console.log(display.value.length);
+        let arr = display.value.split('')
+        arr.pop()
+        let resultAfterDelete = arr.join('');
+        display.value = resultAfterDelete;
+        console.log(arr);
+    }
+    else 
+    {
+        displayInitialValue();
+        return;
+    }
 })
