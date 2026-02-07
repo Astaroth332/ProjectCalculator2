@@ -106,25 +106,57 @@ let result = '';
 
 operatorButtonsContainer.addEventListener('click' , (e) => {
     let buttons = e.target.id;
-    console.log(buttons);
-    console.log(firstOperand); 
-    console.log(secondOperand);
+    console.log("first op" + firstOperand);
+    console.log("second op" + secondOperand);
+    console.log("operator" + operator);
 
-    if(!operator) {
+
+    if(!operator) 
+    {
+ 
         operator = buttons;
         numOneOccupied  = true;
         isOperatorSelected = true;
     }
-    else if (isOperatorSelected) {
+    else if (isOperatorSelected) 
+    {
         operator = buttons;
-    } else  if(operator === '/' && secondOperand === '0'){
+    } 
+    else  if(operator === '/' && secondOperand === '0') {
         console.log('taa');
         display.value = 'NaN';
         displayNaN = true;
         return;
     }
+    else if (resultCameFromEqual && deleteOnResult)
+    {
+        console.log('ito');
+        display.value = '';
+        displayValue(result);
+        operator = buttons;
+        firstOperand = result;
+        result = '';
+        secondOperand = '';  
+        secondOperandTurn = true;
+        resultCameFromEqual = false;
+        deleteOnResult = false;
+    }
+    else if(deleteOnResult)
+    {
+        console.log('ito dapat');
+        display.value = '';
+        firstOperand = result;
+        result = String(+operate(convertToNumber(firstOperand),operator, convertToNumber(secondOperand)).toFixed(2));
+        displayValue(result);
+        operator = buttons;
+        firstOperand = result;
+        secondOperand = '';  
+        secondOperandTurn = true;
+        deleteOnResult = false;
+    }
     else if(operator && firstOperand && secondOperand)
     {
+        console.log('ito')
         display.value = '';
         result = String(+operate(convertToNumber(firstOperand),operator, convertToNumber(secondOperand)).toFixed(2));
         displayValue(result);
@@ -133,18 +165,23 @@ operatorButtonsContainer.addEventListener('click' , (e) => {
         secondOperand = '';  
         secondOperandTurn = true;
     }
+    
   
 })
+let resultCameFromEqual = false;
 
 calculate.addEventListener('click', () => {
-    console.log(firstOperand);
-    console.log(secondOperand);
-    console.log(operator);
+    console.log("first op " + firstOperand);
+    console.log("second op " + secondOperand);
+    console.log("operator " + operator);
 
     if(firstOperand && secondOperand && operator)
     {
         display.value = "";
         result = String(+operate(convertToNumber(firstOperand),operator, convertToNumber(secondOperand)).toFixed(2));
+        console.log("result " + result);
+        secondOperand = '';
+        resultCameFromEqual = true;
         displayValue(result);
     }
     else 
@@ -169,21 +206,39 @@ clearBtn.addEventListener('click', () => {
 })
 
 const delBtn = document.querySelector('#delBtn');
+let deleteOnResult = false;
 
 delBtn.addEventListener('click', () => {
 
-    if(display.value.length > 1)
+    if(!numOneOccupied && firstOperand.length > 1 && result.length <= 0)
     {
-        console.log(display.value.length);
-        let arr = display.value.split('')
+        let arr = firstOperand.split('')
         arr.pop()
-        let resultAfterDelete = arr.join('');
-        display.value = resultAfterDelete;
-        console.log(arr);
+        firstOperand = arr.join('');
+        display.value = firstOperand;
+        console.log(firstOperand);
     }
-    else 
+    else if (numOneOccupied && secondOperand.length > 1 && result.length <= 0)
     {
-        displayInitialValue();
+        let arr = secondOperand.split('')
+        arr.pop()
+        secondOperand = arr.join('');
+        display.value = secondOperand;
+        console.log(secondOperand);
+    }
+    else if (result.length > 1)
+    {
+        let arr = result.split('')
+        arr.pop()
+        result = arr.join('');
+        display.value = result;
+        deleteOnResult = true;
+        console.log(result);
+    }
+    else
+    {
+        displayInitialValue()
+        console.log('ito')
         return;
     }
 })
